@@ -1,23 +1,18 @@
-﻿@page "/"
+﻿<PageTitle>Index</PageTitle>
+@page "/"
 @using System.Text.Json;
 @using System.Device.Gpio;
 
-<PageTitle>Index</PageTitle>
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+	<iframe src="http://192.168.0.105:8080/min.php" title="CallieCam" scrolling="no" style="width:1024px;height:576px;border:none;margin-top:-50px;margin:auto;display:block;"></iframe>
 
-<h1>Hello, world!</h1>
+	<MudButton OnClick="(() => GetSensorData())">Refresh Data</MudButton>
+	<MudButton OnClick="(() => ToggleLights(true))">LEDs On</MudButton>
+	<MudButton OnClick="(() => ToggleLights(false))">LEDs Off</MudButton>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
-
-<iframe src="http://192.168.0.105:8080/min.php" title="CallieCam" scrolling="no" style="width:1024px;height:576px;border:none;margin-top:-50px;margin:auto;display:block;"></iframe>
-
-<button class="btn btn-primary" @onclick="(() => GetSensorData())">Refresh Data</button>
-<button class="btn btn-primary" @onclick="(() => ToggleLights(true))">LEDs On</button>
-<button class="btn btn-primary" @onclick="(() => ToggleLights(false))">LEDs Off</button>
-
-<p>@temp</p>
-<p>@humidity</p>
+	<MudText>@temp</MudText>
+	<MudText>@humidity</MudText>
+</MudContainer>
 
 @code {
 	double temp;

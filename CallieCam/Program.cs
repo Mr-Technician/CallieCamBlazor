@@ -1,12 +1,14 @@
 using CallieCam.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddMudServices();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
@@ -19,7 +21,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.Urls.Add("http://0.0.0.0:8081");
+app.Urls.Add("http://0.0.0.0:80");
 
 app.UseHttpsRedirection();
 
