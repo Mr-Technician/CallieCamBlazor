@@ -3,29 +3,58 @@
 @using System.Text.Json;
 @using System.Device.Gpio;
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
-	<iframe src="http://192.168.0.105:8080/min.php" title="CallieCam" scrolling="no" style="width:1024px;height:576px;border:none;margin-top:-50px;margin:auto;display:block;"></iframe>
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-6">
+	<MudText Typo="Typo.h4" Align="Align.Center" GutterBottom>CallieCam</MudText>
+	<MudCard Outlined Style="width:1024px;height:576px;margin:auto">
+		<iframe src="http://192.168.0.105:8080/min.php" title="CallieCam" scrolling="no" style="width:1024px;height:576px;border:none;margin-top:-50px;margin:auto;display:block;"></iframe>
+	</MudCard>
 
-	<MudButton OnClick="(() => GetSensorData())">Refresh Data</MudButton>
-	<MudButton OnClick="(() => ToggleLights(true))">LEDs On</MudButton>
-	<MudButton OnClick="(() => ToggleLights(false))">LEDs Off</MudButton>
-
-	<MudText>@temp</MudText>
-	<MudText>@humidity</MudText>
+	<div class="mt-3" style="width:1024px;margin:auto;">
+		<MudButton Variant="Variant.Filled" DisableElevation Color="Color.Success" StartIcon="@Icons.Material.Filled.FlashlightOn" OnClick="(() => ToggleLights(true))">LEDs On</MudButton>
+		<MudButton Variant="Variant.Filled" DisableElevation Color="Color.Error" StartIcon="@Icons.Material.Filled.FlashlightOff" OnClick="(() => ToggleLights(false))">LEDs Off</MudButton>
+		<MudButton Variant="Variant.Filled" DisableElevation Color="Color.Info" StartIcon="@Icons.Material.Filled.Refresh" OnClick="(() => GetSensorData())">Refresh Data</MudButton>
+		<MudGrid Class="mt-1">
+			<MudItem md="4" sm="12">
+				<MudCard Outlined>
+					<MudCardContent>
+						<MudText Typo="Typo.h2" Align="Align.Center">@string.Format("{0:0.#}", tempF)°</MudText>
+					</MudCardContent>
+				</MudCard>
+			</MudItem>
+			<MudItem md="4" sm="12">
+				<MudCard Outlined>
+					<MudCardContent>
+						<MudText Typo="Typo.h2" Align="Align.Center">@string.Format("{0:0.#}", humidity)%</MudText>
+					</MudCardContent>
+				</MudCard>
+			</MudItem>
+		</MudGrid>
+	</div>
 </MudContainer>
 
 @code {
-	double temp;
-	double humidity;
+	private double tempF => (tempC * ((double)9 / 5)) + 32;
+	private double tempC;
+	private double humidity;
 
 	private async Task GetSensorData()
 	{
-		var result = await Task.Run(() => "./sensor".Bash());
-		Console.WriteLine(result);
-		var tuple = JsonSerializer.Deserialize<Tuple<double, double>>(result);
-		Console.WriteLine(tuple?.Item1);
-		temp = tuple?.Item1 ?? 0;
-		humidity = tuple?.Item2 ?? 0;
+		try
+		{
+			var result = await Task.Run(() => "./sensor".Bash());
+			Console.WriteLine(result);
+			var tuple = JsonSerializer.Deserialize<Tuple<double, double>>(result);
+			Console.WriteLine(tuple?.Item1);
+			tempC = tuple?.Item1 ?? 0;
+			humidity = tuple?.Item2 ?? 0;
+		}
+		catch (Exception)
+		{
+			await Task.Delay(1500);
+			var random = new Random();
+			tempC = random.NextDouble();
+			humidity = random.NextDouble();
+		}
 	}
 
 	private void ToggleLights(bool state)
