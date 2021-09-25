@@ -19,6 +19,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.Urls.Add("http://0.0.0.0:8081");
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
