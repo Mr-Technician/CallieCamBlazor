@@ -23,7 +23,7 @@ if (!app.Environment.IsDevelopment())
 
 app.Urls.Add("http://0.0.0.0:80");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
