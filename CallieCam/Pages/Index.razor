@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.Text.Json;
+@using System.Device.Gpio;
 
 <PageTitle>Index</PageTitle>
 
@@ -10,11 +11,13 @@ Welcome to your new app.
 <SurveyPrompt Title="How is Blazor working for you?" />
 
 <button class="btn btn-primary" @onclick="(() => GetSensorData())">Refresh Data</button>
+<button class="btn btn-primary" @onclick="(() => ToggleLights(true))">LEDs On</button>
+<button class="btn btn-primary" @onclick="(() => ToggleLights(false))">LEDs Off</button>
 
 <p>@temp</p>
 <p>@humidity</p>
 
-@code{
+@code {
 	double temp;
 	double humidity;
 
@@ -26,5 +29,23 @@ Welcome to your new app.
 		Console.WriteLine(tuple?.Item1);
 		temp = tuple?.Item1 ?? 0;
 		humidity = tuple?.Item2 ?? 0;
+	}
+
+	private void ToggleLights(bool state)
+	{
+		int led1 = 2;
+		int led2 = 3;
+		int led3 = 4;
+		int led4 = 17;
+		using var controller = new GpioController();
+		controller.OpenPin(led1, PinMode.Output);
+		controller.OpenPin(led2, PinMode.Output);
+		controller.OpenPin(led3, PinMode.Output);
+		controller.OpenPin(led4, PinMode.Output);
+
+		controller.Write(led1, ((state) ? PinValue.High : PinValue.Low));
+		controller.Write(led2, ((state) ? PinValue.High : PinValue.Low));
+		controller.Write(led3, ((state) ? PinValue.High : PinValue.Low));
+		controller.Write(led4, ((state) ? PinValue.High : PinValue.Low));
 	}
 }
