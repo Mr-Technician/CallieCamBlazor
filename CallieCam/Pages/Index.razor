@@ -42,19 +42,12 @@
 		try
 		{
 			var result = await Task.Run(() => "./sensor".Bash());
-			Console.WriteLine(result);
 			var tuple = JsonSerializer.Deserialize<Tuple<double, double>>(result);
-			Console.WriteLine(tuple?.Item1);
 			tempC = tuple?.Item1 ?? 0;
 			humidity = tuple?.Item2 ?? 0;
+			await InvokeAsync(() => StateHasChanged()); //trigger state has changed back to the ui thread
 		}
-		catch (Exception)
-		{
-			await Task.Delay(1500);
-			var random = new Random();
-			tempC = random.NextDouble();
-			humidity = random.NextDouble();
-		}
+		catch (Exception){}
 	}
 
 	private void ToggleLights(bool state)
@@ -73,5 +66,10 @@
 		controller.Write(led2, ((state) ? PinValue.High : PinValue.Low));
 		controller.Write(led3, ((state) ? PinValue.High : PinValue.Low));
 		controller.Write(led4, ((state) ? PinValue.High : PinValue.Low));
+	}
+
+	protected override void OnInitialized()
+	{
+		GetSensorData().AndForget(); //get the sensor data on load using Forget
 	}
 }
